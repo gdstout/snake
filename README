@@ -1,3 +1,7 @@
 README for 'Snake' by Griffin Stout
 
-type "./snake" to run
+You won't be able to build without the correct SDL2 headers.
+
+Type 'make' to compile and build the binary.
+
+Type './snake' to run the binary and play the game.
