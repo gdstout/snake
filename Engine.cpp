@@ -4,6 +4,25 @@
 Engine::Engine(){}
 Engine::~Engine(){}
 
+void render_walls(SDL_Renderer* r){
+  SDL_Rect rect;
+
+  SDL_SetRenderDrawColor(r, 232, 232, 232, 255);
+
+  rect.w = 13;
+  rect.h = 13;
+  
+  for(int i = 0; i < 30; i ++){
+    for(int j = 0; j < 30; j ++){
+      if(i == 0 || j == 0 || i == 29 || j == 29){
+	rect.x = (j * 15) + 1;
+	rect.y = (i * 15) + 1;
+	SDL_RenderDrawRect(r, &rect);
+      }
+    }
+  }
+}
+
 void Engine::init(const char* title, int x_pos, int y_pos, int width,
 		  int height, bool fullscreen){
   int flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
@@ -16,6 +35,7 @@ void Engine::init(const char* title, int x_pos, int y_pos, int width,
     if(window){
       std::cout << "Window created..." << std::endl;
     }
+
 
     renderer = SDL_CreateRenderer(window, -1, 0);
     if(renderer){
@@ -49,10 +69,15 @@ void Engine::update(){
 void Engine::render_screen(){
   SDL_RenderClear(renderer);
 
+  render_walls(renderer);
+
+  SDL_SetRenderDrawColor(renderer, 30, 20, 20, 255);
+  
   SDL_RenderPresent(renderer);
 }
 
 void Engine::terminate(){
   SDL_DestroyWindow(window);
   SDL_DestroyRenderer(renderer);
+  SDL_Quit();
 }
