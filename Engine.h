@@ -5,6 +5,7 @@
 #include "stdio.h"
 
 class Engine {
+  
  public:
   Engine();
   ~Engine();
@@ -12,15 +13,15 @@ class Engine {
   void init(const char* title, int x_pos, int y_pos, int width, int height,
 	    bool fullscreen);
 
-  void handleEvents();
+  void handle_events();
   void update();
-  void renderScreen();
-  void end();
+  void render_screen();
+  void terminate();
 
-  bool is_running();
+  bool running(){ return is_running; }
 
  private:
-  bool is_running();
+  bool is_running;
   SDL_Window* window;
   SDL_Renderer* renderer;
 };
