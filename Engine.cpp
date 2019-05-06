@@ -1,5 +1,8 @@
 #include "Engine.h"
+
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 Engine::Engine(){}
 Engine::~Engine(){}
@@ -52,35 +55,92 @@ void render_snake(SDL_Renderer* r, std::vector<pair_t> &s, int length){
 
 }
 
-void move(std::vector<pair_t> &s, int direction){
-  pair_t front = s.front();
+void render_apple(SDL_Renderer *r, pair_t &a){
+  SDL_Rect rect;
+
+  rect.w = 13;
+  rect.h = 13;
+  rect.x = (a.x * 15) + 1;
+  rect.y = (a.y * 15) + 1;
+  
+  SDL_SetRenderDrawColor(r, 232, 55, 55, 255);
+  SDL_RenderFillRect(r, &rect);
+}
+
+bool collision_with_snake(pair_t pair, std::vector<pair_t> &s){
+  for(auto &i : s){
+    if(i.x == pair.x && i.y == pair.y){
+      return true;
+    }
+  }
+  return false;
+}
+
+void Engine::new_apple_position(){
+  do{
+    /* in between 1 and 28 */
+    apple.x = rand() % 27 + 1;
+    apple.y = rand() % 27 + 1;
+  }while(collision_with_snake(apple, snake));
+}
+
+
+void Engine::move(){
+  pair_t front = snake.front();
+  pair_t new_front;
   switch(direction){
   case 0: /* up */
-    s.insert(s.begin(), {front.x, front.y - 1});
+    new_front.x = front.x;
+    new_front.y = front.y - 1;
     break;
   case 1: /* right */
-    s.insert(s.begin(), {front.x + 1, front.y});
+    new_front.x = front.x + 1;
+    new_front.y = front.y;
     break;
   case 2: /* down */
-    s.insert(s.begin(), {front.x, front.y + 1});
+    new_front.x = front.x;
+    new_front.y = front.y + 1;
     break;
   case 3: /* left */
-    s.insert(s.begin(), {front.x - 1, front.y});
+    new_front.x = front.x - 1;
+    new_front.y = front.y;
     break;
   }
 
-  s.pop_back();
+  /* check to see if new front location is invalid */
+  if(new_front.x == 0 || new_front.y == 0 || new_front.x == 29 ||
+     new_front.y == 29){
+    terminate();
+  }
+  if(collision_with_snake(new_front, snake)){
+    terminate();
+  }
+
+  /* check to see if new front location is apple */
+  if(new_front.x == apple.x && new_front.y == apple.y){
+    new_apple_position();
+    snake_length ++;
+    snake.push_back(snake.back());
+  }
+
+  snake.insert(snake.begin(), new_front);
+
+  snake.pop_back();
 }
 
 void Engine::init(const char* title, int x_pos, int y_pos, int width,
 		  int height, bool fullscreen){
   int flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
 
+  srand(time(NULL));
+
   snake_length = 3; /* not 4 because last pair is blank */
   snake.push_back({15, 14});
   snake.push_back({14, 14});
   snake.push_back({13, 14});
   snake.push_back({12, 14});/* because last pair in snake is empty */
+
+  new_apple_position();
 
   direction = 1;
   frame_count = 0;
@@ -149,8 +209,8 @@ void Engine::handle_events(){
 }
 
 void Engine::update(){
-  if(frame_count > 5){
-    move(snake, direction);
+  if(frame_count > 7){
+    move();
     frame_count = 0;
   }
 
@@ -162,6 +222,7 @@ void Engine::render_screen(){
 
   render_walls(renderer);
   render_snake(renderer, snake, snake_length);
+  render_apple(renderer, apple);
 
   SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
   
@@ -169,6 +230,7 @@ void Engine::render_screen(){
 }
 
 void Engine::terminate(){
+  is_running = false;
   SDL_DestroyWindow(window);
   SDL_DestroyRenderer(renderer);
   SDL_Quit();

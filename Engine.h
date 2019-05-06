@@ -37,6 +37,11 @@ class Engine {
   int direction;
   int frame_count;
 
+  pair_t apple;
+
+  void move();
+  void new_apple_position();
+
 };
 
 #endif
