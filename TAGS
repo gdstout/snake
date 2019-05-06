@@ -1,0 +1,18 @@
+
+Engine.cpp,276
+Engine::Engine(4,41
+Engine::~Engine(5,60
+void render_walls(7,81
+void render_snake(27,437
+void move(55,1072
+void Engine::init(75,1518
+void Engine::handle_events(109,2379
+void Engine::update(151,3110
+void Engine::render_screen(160,3230
+void Engine::terminate(171,3454
+
+Main.cpp,81
+Engine* engine 4,22
+const int WIDTH 5,45
+const int HEIGHT 6,68
+int main(8,93

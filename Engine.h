@@ -4,6 +4,13 @@
 #include "SDL2/SDL.h"
 #include "stdio.h"
 
+#include <vector>
+
+typedef struct pair {
+  int x;
+  int y;
+} pair_t;
+
 class Engine {
   
  public:
@@ -24,6 +31,11 @@ class Engine {
   bool is_running;
   SDL_Window* window;
   SDL_Renderer* renderer;
+
+  int snake_length;
+  std::vector<pair_t> snake;
+  int direction;
+  int frame_count;
 
 };
 
